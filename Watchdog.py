@@ -127,6 +127,8 @@ def patch_dme(RUN_PATH, PATCHES_PATH, GAME_PATH, map_find, map_filename, dme, ma
 	secret_config = secret_config_default
 	if PATCHES_PATH is not None:
 		secret_config = Config(os.path.join(PATCHES_PATH, 'patches.yml'), secret_config_default)
+	else:
+		return False
 	autoadd = secret_config['dme-patches']['auto-add']
 	addincludes = [fix_path(x) for x in secret_config['dme-patches']['add']]
 	removeincludes = [fix_path(x) for x in secret_config['dme-patches']['remove']]
@@ -254,16 +256,16 @@ def Compile(serverState, no_restart=False):
 		# 'code',
 		'html',
 		'icons',
-		'maps', 		
+		'maps',			
 	]
 
 	with os_utils.TimeExecution('Copy staging: {} -> {}'.format(GAME_PATH, RUN_PATH)):
-		os_utils.copytree(GAME_PATH, RUN_PATH, ignore=['.git/', '.bak'], verbose=False, ignore_mtime=True)  # Always copy.
+		os_utils.copytree(GAME_PATH, RUN_PATH, ignore=['.git/', '.bak'], verbose=False)  # Always copy.
 					
 	if config.get('git.patches.path') is not None:
 		PATCHES_PATH = os.path.abspath(config.get('git.patches.path'))
 		with os_utils.TimeExecution('Copy patches: {} -> {}'.format(PATCHES_PATH, RUN_PATH)):
-			os_utils.copytree(PATCHES_PATH, RUN_PATH, ignore=['.git/', '.bak'], verbose=False, ignore_mtime=True)  # Always copy.
+			os_utils.copytree(PATCHES_PATH, RUN_PATH, ignore=['.git/', '.bak'], verbose=False)  # Always copy.
 	
 	map_find = re.compile('{}'.format(config.get('commands.compile.map-voting.match', None)))
 	map_list = config.get('commands.compile.map-voting.maps', {'':None})
@@ -363,8 +365,8 @@ def PerformServerReadyCheck(serverState):
 		return
 	
 	# with QChdir(config.get('git.game.path')):
-	# 	currentCommit = Git.GetCommit()
-	# 	currentBranch = Git.GetBranch()
+	#	currentCommit = Git.GetCommit()
+	#	currentBranch = Git.GetBranch()
 	
 	updatereadyfile = os.path.join(config.get('paths.run'), 'data', 'UPDATE_READY.txt')
 	serverreadyfile = os.path.join(config.get('paths.run'), 'data', 'SERVER_READY.txt')
@@ -528,8 +530,8 @@ def getDMB(ignore_mapvoting=False):
 	dme_filename = config.get('compile.dme', 'baystation12.dmb')
 	
 	# if config.get('commands.compile.map-voting.match', None) is not None and not ignore_mapvoting:
-	# 	filename, ext = os.path.splitext(dme_filename)
-	# 	dme_filename = filename + '.mdme.dmb'
+	#	filename, ext = os.path.splitext(dme_filename)
+	#	dme_filename = filename + '.mdme.dmb'
 	return dme_filename
 			
 def restartServer():
